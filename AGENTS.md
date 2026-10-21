@@ -90,8 +90,17 @@ Conventional Commits, Jira key at the end:
 - When the PR is merged: move the ticket to *QA* and comment "Merged in PR #<n> — ready for QA", with the
   debug APK link from the PR's CI comment if available.
 
+## AI review feedback
+- Every PR is reviewed by Claude (GitHub Action "AI Claude Review"). Its reviews start with
+  `[AI-REVIEW] CHANGES_REQUESTED` or `[AI-REVIEW] APPROVED`.
+- Treat the latest `[AI-REVIEW] CHANGES_REQUESTED` review as unresolved review feedback: fix every
+  blocker/major issue on the same branch (commit `fix(<scope>): address review — <what> [<JIRA-KEY>]`),
+  run the checks, push, and reply on the PR with what you changed. Minor issues are optional; say which you
+  fixed. Do not argue in code — if you disagree, explain in the PR reply.
+- `[AI-REVIEW] APPROVED` means no AI feedback is pending; a human still reviews and merges.
+
 ## Never
 - Push to `main` directly, force-push, rebase shared branches, or touch other people's branches.
-- Modify `.github/workflows/`, signing configs, `android/key.properties` or `ios/Runner.xcodeproj` signing settings.
+- Modify `.github/workflows/`, `.github/ai-prompts/`, signing configs, `android/key.properties` or `ios/Runner.xcodeproj` signing settings.
 - Delete or skip existing tests to make the suite pass.
 - Commit secrets, tokens or credentials.
