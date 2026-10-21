@@ -1,5 +1,5 @@
 ## Ticket
-<!-- [FF-123](https://qburst-ai-sample-flutter.atlassian.net/browse/FF-123): one-line summary -->
+**Jira:** [FF-___](https://qburst-ai-sample-flutter.atlassian.net/browse/FF-___) — <!-- one-line ticket summary -->
 
 ## Summary
 <!-- 2–4 sentences: what changed and why, from the user's point of view. -->
@@ -42,4 +42,5 @@
 ## Commits
 <!-- one line per commit: type(scope): summary [FF-123] -->
 
-Closes FF-<!-- number -->
+---
+Closes FF-___ · Jira: https://qburst-ai-sample-flutter.atlassian.net/browse/FF-___

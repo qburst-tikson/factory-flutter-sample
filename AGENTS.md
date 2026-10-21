@@ -68,7 +68,10 @@ Conventional Commits, Jira key at the end:
 - PR title: `[<JIRA-KEY>] <ticket summary>`.
 - PR description: use `.github/pull_request_template.md` and fill in **every** section — no section
   left as a placeholder:
-  - **Ticket** (Jira link) and **Summary**.
+  - **Ticket**: the first line of the PR must be the clickable Jira link, e.g.
+    `**Jira:** [FF-12](https://qburst-ai-sample-flutter.atlassian.net/browse/FF-12) — <ticket summary>`.
+    Repeat the full link on the last line next to `Closes FF-12`. Replace every `FF-___` placeholder.
+  - **Summary**.
   - **Acceptance criteria**: copy each criterion from the ticket, tick it, and name the file/widget/cubit
     that implements it. If one is not met, leave it unticked and explain why.
   - **What changed (by layer)**: domain, data, presentation, DI/core ("No change" where nothing changed).
