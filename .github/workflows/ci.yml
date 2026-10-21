@@ -59,10 +59,12 @@ jobs:
 
       - name: Build debug APK
         id: build
+        env:
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           flutter pub get
           flutter build apk --debug
-          name="app-debug-${GITHUB_SHA::7}.apk"
+          name="app-debug-${SHA::7}.apk"
           cp build/app/outputs/flutter-apk/app-debug.apk "$name"
           echo "name=$name" >> "$GITHUB_OUTPUT"
 
@@ -81,10 +83,11 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
           URL: ${{ steps.upload.outputs.artifact-url }}
           NAME: ${{ steps.build.outputs.name }}
+          SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           marker="<!-- ci-debug-apk -->"
           body="$marker
-          📦 **Debug APK** for \`${GITHUB_SHA::7}\`: [${NAME}](${URL}) (download as zip, unzip, install on Android; kept 14 days, GitHub login needed)."
+          📦 **Debug APK** for \`${SHA::7}\`: [${NAME}](${URL}) (download as zip, unzip, install on Android; kept 14 days, GitHub login needed)."
           id="$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
                 --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)"
           if [[ -n "$id" ]]; then
