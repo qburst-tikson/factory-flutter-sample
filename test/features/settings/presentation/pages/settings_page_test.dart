@@ -64,6 +64,25 @@ void main() {
     expect(find.text('Logged in as'), findsNothing);
   });
 
+  testWidgets('shows the app version at the bottom, centered and grey', (
+    tester,
+  ) async {
+    when(() => cubit.state).thenReturn(const SettingsLoaded('a@b.com'));
+
+    await tester.pumpWidget(buildSubject());
+
+    final finder = find.text('Version 1.0.0');
+    expect(finder, findsOneWidget);
+    expect(tester.widget<Text>(finder).style?.color, Colors.grey);
+    expect(tester.widget<Text>(finder).textAlign, TextAlign.center);
+    expect(
+      tester.getCenter(finder).dy,
+      greaterThan(tester.getCenter(find.text('Logged in as')).dy),
+    );
+    expect(find.text('Logged in as'), findsOneWidget);
+    expect(find.byIcon(Icons.logout), findsOneWidget);
+  });
+
   testWidgets('keeps the "Settings" app bar title and the logout action', (
     tester,
   ) async {

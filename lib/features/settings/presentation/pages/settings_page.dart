@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/config/app_info.dart';
 import '../../../../core/di/injection.dart';
 import '../../../auth/presentation/widgets/logout_button.dart';
 import '../cubit/settings_cubit.dart';
@@ -31,24 +32,45 @@ class SettingsView extends StatelessWidget {
       body: BlocBuilder<SettingsCubit, SettingsState>(
         builder: (context, state) => Padding(
           padding: const EdgeInsets.all(16),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: switch (state) {
-              // Transient: the cubit loads on creation, so this is never
-              // visible in practice.
-              SettingsInitial() => const SizedBox.shrink(),
-              SettingsLoaded(:final email) => Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.person),
-                    title: const Text('Logged in as'),
-                    subtitle: Text(email),
-                  ),
+          child: Column(
+            children: [
+              Expanded(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: switch (state) {
+                    // Transient: the cubit loads on creation, so this is never
+                    // visible in practice.
+                    SettingsInitial() => const SizedBox.shrink(),
+                    SettingsLoaded(:final email) => Card(
+                        child: ListTile(
+                          leading: const Icon(Icons.person),
+                          title: const Text('Logged in as'),
+                          subtitle: Text(email),
+                        ),
+                      ),
+                    SettingsNotLoggedIn() => const Text('Not logged in'),
+                  },
                 ),
-              SettingsNotLoggedIn() => const Text('Not logged in'),
-            },
+              ),
+              const _VersionLabel(),
+            ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class _VersionLabel extends StatelessWidget {
+  const _VersionLabel();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      'Version ${AppInfo.version}',
+      textAlign: TextAlign.center,
+      style:
+          Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
     );
   }
 }
