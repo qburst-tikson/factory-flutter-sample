@@ -35,3 +35,63 @@ jobs:
 
       - name: Test
         run: flutter test
+
+  # Debug APK for every PR (and main), so reviewers and QA can install the change on a phone.
+  apk:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Build debug APK
+        id: build
+        env:
+          SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          flutter pub get
+          flutter build apk --debug
+          name="app-debug-${SHA::7}.apk"
+          cp build/app/outputs/flutter-apk/app-debug.apk "$name"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.name }}
+          path: ${{ steps.build.outputs.name }}
+          retention-days: 14
+
+      - name: Comment the APK link on the PR
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          URL: ${{ steps.upload.outputs.artifact-url }}
+          NAME: ${{ steps.build.outputs.name }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          marker="<!-- ci-debug-apk -->"
+          body="$marker
+          📦 **Debug APK** for \`${SHA::7}\`: [${NAME}](${URL}) (download as zip, unzip, install on Android; kept 14 days, GitHub login needed)."
+          id="$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+                --jq ".[] | select(.body | startswith(\"$marker\")) | .id" | head -n1)"
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -f body="$body" > /dev/null
+          fi
