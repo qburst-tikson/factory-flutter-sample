@@ -64,9 +64,28 @@ Conventional Commits, Jira key at the end:
 
 ## Branches and pull requests
 - Branch from `main` as `feature/<JIRA-KEY>-<short-slug>` (bugs: `fix/<JIRA-KEY>-<short-slug>`).
-- PR title: `[<JIRA-KEY>] <ticket summary>`. PR description: summary, commit list, how to test,
-  deviations from the plan (or "None"), and the Jira link.
 - Run `dart format .`, `flutter analyze` and `flutter test` before opening or updating a PR; all must pass.
+- PR title: `[<JIRA-KEY>] <ticket summary>`.
+- PR description: use `.github/pull_request_template.md` and fill in **every** section — no section
+  left as a placeholder:
+  - **Ticket** (Jira link) and **Summary**.
+  - **Acceptance criteria**: copy each criterion from the ticket, tick it, and name the file/widget/cubit
+    that implements it. If one is not met, leave it unticked and explain why.
+  - **What changed (by layer)**: domain, data, presentation, DI/core ("No change" where nothing changed).
+  - **Files changed** table (file → purpose).
+  - **Tests**: list every new or updated test file and what it covers, plus the real results
+    (`flutter analyze` issue count, `flutter test` passed/failed counts from your last run).
+  - **How to test manually**: numbered steps a tester can follow on the APK, including the demo login.
+  - **Screens affected**, **Risks / reviewer focus**, **Plan & deviations** (link the `[AI-PLAN]` comment
+    if there is one), **Commits** (one line each), and `Closes <JIRA-KEY>`.
+- Add the labels `factory` and the ticket key (e.g. `FF-12`) to the PR.
+
+## Jira updates
+- When you start: comment "Factory Droid started work" and move the ticket to *In Development*.
+- When the PR is open: comment a short summary on the ticket — what changed (2–3 bullets), tests added
+  with results, how to test, and the PR link — then move it to *In Review*.
+- When the PR is merged: move the ticket to *QA* and comment "Merged in PR #<n> — ready for QA", with the
+  debug APK link from the PR's CI comment if available.
 
 ## Never
 - Push to `main` directly, force-push, rebase shared branches, or touch other people's branches.
